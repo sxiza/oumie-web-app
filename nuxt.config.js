@@ -5,7 +5,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'oumanet-web-app',
+    title: 'Oumienet',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -17,9 +17,27 @@ module.exports = {
     ]
   },
   modules: [
-    // Simple usage
     '@nuxtjs/dotenv',
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
+  // router: {
+  //   middleware: ['auth']
+  // },
+  axios: {
+    baseURL: 'http://192.168.99.100:3333'
+  },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/auth/login', method: 'post', propertyName: 'token' },
+          user: { url: '/auth/self', method: 'get', propertyName: false },
+          logout: false
+        }
+      }
+    }
+  },
   plugins: ['~/plugins/vuetify.js'],
   css: ['~/assets/style/app.styl'],
   /*
