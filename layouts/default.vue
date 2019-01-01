@@ -9,7 +9,7 @@ export default {
 			fixed: false,
 			items: [
 				{ icon: 'apps', title: 'Welcome', to: '/', public: true, inAuth: true, action: () => {} },
-				{ icon: 'bubble_chart', title: 'Inspire', to: '/inspire', public: false, inAuth: true, action: () => {} },
+				{ icon: 'bubble_chart', title: 'Beneficiaries', to: '/beneficiary', public: false, inAuth: true, action: () => {} },
 				{ icon: 'person_add', title: `Register`, to: '/register', public: true, inAuth: false, action: () => {} },
 				{ icon: 'account_circle', title: 'Login', to: '/login', public: true, inAuth: false, action: () => {} },
 				{ icon: 'exit_to_app', title: 'Logout', public: false, inAuth: true, action: this.logout },

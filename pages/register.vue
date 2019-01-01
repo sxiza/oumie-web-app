@@ -62,7 +62,7 @@ export default {
 		store.commit('inspire/setPoef', process.env.API_URL)
     },
 
-    mounted() {
+    created() {
         this.authHttp = new AuthHttp(this.$axios);
     }
 }
