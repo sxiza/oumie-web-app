@@ -1,18 +1,22 @@
-import unsplash from 'unsplash-source-node'
-
 class ImageGenerator {
     constructor() {
-        this.client = unsplash({ });
+        this.base = `https://source.unsplash.com`;
+        this.width = 1600;
+        this.length = 900;
+        this.search = [];
     }
 
-    topic(...topics) {
-        this.client.of(topics);
+    topics(...topics) {
+        this.search = topics;
 
         return this;
     }
 
-    async url() {
-        await this.client.fetch();
+    url() {
+        if (!this.search.join())
+            throw new Error(`${this.constructor.name}: specify some topics to search first.`);
+
+        return `${this.base}/${this.width}x${this.length}/?${this.search.join()}`;
     }
 }
 

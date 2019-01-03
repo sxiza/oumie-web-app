@@ -9,13 +9,13 @@ class BeneficiaryHttp {
     }
 
     /**
-	 * Get all Beneficiaries owned by current User
+	 * Get specific beneficiary data
 	 *
-	 * @method register
+	 * @method get
 	 *
-	 * @return {Object} List of Beneficiaries
+	 * @return {Object} Beneficiary
 	 */
-    async get(id) {
+    async show(id) {
         try {
             return (await this.client.get(this.prefix + `/${id}`)).data;
         }
@@ -28,7 +28,7 @@ class BeneficiaryHttp {
     /**
 	 * Get all Beneficiaries owned by current User
 	 *
-	 * @method register
+	 * @method getAll
 	 *
 	 * @return {Object} List of Beneficiaries
 	 */

@@ -1,13 +1,19 @@
 <script>
 import BeneficiaryHttp from '../../services/http/BeneficiaryHttp'
+import { mapGetters } from 'vuex'
 
 export default {
 	data() {
         return {
-			beneficiaryHttp: {}
+			beneficiaryHttp: {},
         }
 	},
 	
+	computed: {
+		...mapGetters({
+			beneficiaries: 'beneficiary/beneficiaries'
+		})
+	},
 
 	methods: {
 
@@ -20,7 +26,7 @@ export default {
 		let beneficiaries = await (new BeneficiaryHttp(context.$axios)).getAll();
 		context.store.commit('beneficiary/setBeneficiaries', beneficiaries);
 
-		return { beneficiaries };
+		return { };
 	},
 
 	fetch({ store }) {
