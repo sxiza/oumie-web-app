@@ -3,20 +3,23 @@ import SoundclipHttp from '../../../services/http/SoundclipHttp'
 import BeneficiaryHttp from '../../../services/http/BeneficiaryHttp'
 import ObjectUtil from '../../../utils/ObjectUtil'
 import { mapGetters } from 'vuex'
+import AudioGenerator from '../../../services/audio/AudioGenerator'
 
 export default {
 	data() {
         return {
 			soundclipHttp: {},
 			beneficiaryHttp: {},
-			soundclips: []
+			soundclips: [],
+			audio: {},
+			recording: false
         }
 	},
 
 	computed: {
 		...mapGetters({
 			beneficiary: 'beneficiary/currBeneficiary'
-		})
+		}),
 	},
 	
 
@@ -24,6 +27,27 @@ export default {
 		async getBeneficiary() {
 			let beneficiary = await this.beneficiaryHttp.show(this.$route.params.id);
 			this.$store.commit('beneficiary/setCurrBeneficiary', beneficiary);
+		},
+
+		async play(soundclip) {
+			try {
+				let soundBuffer = await this.soundclipHttp.play(soundclip.id);
+				let clip = this.audio.generateFromBuffer([soundBuffer]);
+				await clip.play();
+			} catch(error) {
+				console.error(error.message);
+			}
+		},
+
+		async record() {
+			await this.audio.record();
+			this.recording = true;
+		},
+
+		async stopRecording() {
+			let clip = await this.audio.stopRecord();
+			this.recording = false;
+			clip.play();
 		}
     },
 
@@ -41,13 +65,13 @@ export default {
 	fetch({ store }) {
 	},
 
-	async created() {
-		console.log(this.soundclips);
+	created() {
 		this.soundclipHttp = new SoundclipHttp(this.$axios);
 		this.beneficiaryHttp = new BeneficiaryHttp(this.$axios);
+		this.audio = new AudioGenerator;
 
 		if (ObjectUtil.isEmpty(this.beneficiary))
-			await this.getBeneficiary();
+			this.getBeneficiary();
 	},
 }
 </script>
@@ -58,7 +82,8 @@ export default {
 		<v-flex xs12 md10 offset-md1>
 			<v-card>
 				<v-list subheader>
-            		<v-subheader>Voicenotes for {{ beneficiary.name }}</v-subheader>
+            		<v-subheader inline>Voicenotes for {{ beneficiary.name }}</v-subheader>
+					
 					<template v-for="(soundclip, k) in soundclips">
 						<v-list-tile
 							:key="soundclip.id"
@@ -73,7 +98,7 @@ export default {
 				
 							<v-list-tile-action>
 								<v-tooltip top>
-									<v-btn icon ripple slot="activator">
+									<v-btn icon ripple slot="activator" @click="play(soundclip)">
 										<v-icon>hearing</v-icon>
 									</v-btn>
 									<span>Play</span>
@@ -94,6 +119,28 @@ export default {
 						</v-divider>
 					</template>
 				</v-list>
+				<v-divider></v-divider>
+				<v-card-actions>
+					<v-spacer></v-spacer>
+					<v-btn round 
+						color="primary" 
+						@click="stopRecording" 
+						v-if="recording">
+						Recording...
+						<v-icon right>stop</v-icon>
+					</v-btn>
+					<v-tooltip bottom
+							v-if="!recording">
+						<v-btn fab 
+							small 
+							slot="activator" 
+							color="primary" 
+							@click="record">
+							<v-icon>mic</v-icon>
+						</v-btn>
+						<span>Record Voicenote</span>
+					</v-tooltip>
+				</v-card-actions>
 			</v-card>
 		</v-flex>
 	</v-layout>

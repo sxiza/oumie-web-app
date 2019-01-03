@@ -9,21 +9,23 @@ class SoundclipHttp {
     }
 
     /**
-	 * Get all Beneficiaries owned by current User
+	 * Get the buffer stream to play a Soundclip
 	 *
-	 * @method get
+	 * @method play
 	 *
 	 * @return {Object} Beneficiary
 	 */
-    // async get(id) {
-    //     try {
-    //         return (await this.client.get(this.prefix + `/${id}`)).data;
-    //     }
-    //     catch (error) {
-    //         console.error(ErrorUtil.getMessages(error));
-    //         return error;
-    //     }
-    // }
+    async play(id) {
+        try {
+            return (await this.client.get(this.prefix + `/${id}/play`, {
+                responseType: 'arraybuffer',
+            })).data;
+        }
+        catch (error) {
+            console.error(ErrorUtil.getMessages(error));
+            return error;
+        }
+    }
 
     /**
 	 * Get list of Soundclips the current User has recorded
