@@ -1,7 +1,7 @@
 <script>
+import { mapGetters } from 'vuex'
 import BeneficiaryHttp from '../../../services/http/BeneficiaryHttp'
 import ImageGenerator from '../../../services/images/ImageGenerator'
-import ObjectUtil from '../../../utils/ObjectUtil'
 
 export default {
 	data() {
@@ -9,9 +9,15 @@ export default {
             beneficiaryHttp: {},
             imageGenerator: {},
             picture: '',
-            beneficiary: {}
+
         }
     },
+    
+	computed: {
+		...mapGetters({
+			beneficiary: 'beneficiary/currBeneficiary'
+		})
+	},
 
 	methods: {
         back() {
@@ -29,7 +35,6 @@ export default {
 
 		return { 
             picture: url,
-            beneficiary
         };
 	},
 
@@ -37,7 +42,6 @@ export default {
     },
 
     created() {
-        console.log(ObjectUtil.isEmpty(this.beneficiary));
     },
     
     beforeCreate() {

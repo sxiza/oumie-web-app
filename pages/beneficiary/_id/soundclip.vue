@@ -1,29 +1,49 @@
 <script>
+import moment from 'moment'
+import { mapGetters } from 'vuex'
 import SoundclipHttp from '../../../services/http/SoundclipHttp'
 import BeneficiaryHttp from '../../../services/http/BeneficiaryHttp'
 import ObjectUtil from '../../../utils/ObjectUtil'
-import { mapGetters } from 'vuex'
+import TimingUtil from '../../../utils/TimingUtil'
 import AudioGenerator from '../../../services/audio/AudioGenerator'
+import SoundclipModel from '../../../constants/models/SoundclipModel'
 
 export default {
 	data() {
         return {
 			soundclipHttp: {},
 			beneficiaryHttp: {},
-			soundclips: [],
 			audio: {},
-			recording: false
+			recording: false,
+			uploading: false,
+			uploaded: 0
         }
 	},
 
 	computed: {
 		...mapGetters({
-			beneficiary: 'beneficiary/currBeneficiary'
+			beneficiary: 'beneficiary/currBeneficiary',
+			soundclips: 'beneficiary/soundclips'
 		}),
+		showMic() {
+			return !this.uploading && !this.recording;
+		}
 	},
 	
 
 	methods: {
+		statusColour(soundclip) {
+			return SoundclipModel.statusColour(soundclip.status, true);
+		},
+		
+		readDateTime(soundclip) {
+			return moment(soundclip.created_at).format("dddd, MMM Do YYYY, h:mm a");
+		},
+
+		uploadProgress(progressEvent) {
+			this.uploaded = parseInt( Math.round( ( progressEvent.loaded * 100 ) / progressEvent.total ) );
+		},
+
 		async getBeneficiary() {
 			let beneficiary = await this.beneficiaryHttp.show(this.$route.params.id);
 			this.$store.commit('beneficiary/setCurrBeneficiary', beneficiary);
@@ -33,7 +53,7 @@ export default {
 			try {
 				let soundBuffer = await this.soundclipHttp.play(soundclip.id);
 				let clip = this.audio.generateFromBuffer([soundBuffer]);
-				await clip.play();
+				clip.play();
 			} catch(error) {
 				console.error(error.message);
 			}
@@ -48,6 +68,16 @@ export default {
 			let clip = await this.audio.stopRecord();
 			this.recording = false;
 			clip.play();
+			this.uploading = true;
+			let soundclip = await this.soundclipHttp.create({
+				soundclip: this.audio.file,
+				beneficiaryID: this.beneficiary.id,
+				onUploadProgress: this.uploadProgress
+			});
+			this.$store.commit('beneficiary/addSoundclip', soundclip);
+			this.uploading = false;
+			await TimingUtil.sleep(10000);
+			this.audio.destroy();
 		}
     },
 
@@ -58,11 +88,16 @@ export default {
 		let soundclips = await (new SoundclipHttp(context.$axios)).getAll({
 			beneficiaryID: context.route.params.id
 		});
+		context.store.commit('beneficiary/setSoundclips', soundclips);
 
-		return { soundclips };
+		return { };
 	},
 
 	fetch({ store }) {
+	},
+
+	beforeDestroy() {
+		this.audio.destroy();
 	},
 
 	created() {
@@ -81,19 +116,39 @@ export default {
 	<v-layout row wrap>
 		<v-flex xs12 md10 offset-md1>
 			<v-card>
-				<v-list subheader>
-            		<v-subheader inline>Voicenotes for {{ beneficiary.name }}</v-subheader>
-					
+				<v-card-actions>
+					<v-subheader>  <v-icon>music_note</v-icon>Voicenotes for {{ beneficiary.name }}</v-subheader>
+					<v-spacer></v-spacer>
+					<v-progress-circular 
+						:value="uploaded" 
+						v-if="uploading" 
+						color="lime">
+					</v-progress-circular>
+					<v-btn round 
+						color="primary" 
+						@click="stopRecording" 
+						v-if="recording">
+						Recording...
+						<v-icon right>stop</v-icon>
+					</v-btn>
+					<v-tooltip bottom
+							v-if="showMic">
+						<v-btn fab 
+							small
+							slot="activator" 
+							color="primary" 
+							@click="record">
+							<v-icon>mic</v-icon>
+						</v-btn>
+						<span>Record Voicenote</span>
+					</v-tooltip>
+				</v-card-actions>
+				<v-list>
 					<template v-for="(soundclip, k) in soundclips">
 						<v-list-tile
-							:key="soundclip.id"
-							avatar>
-							<v-list-tile-avatar>
-								<v-icon>music_note</v-icon>
-							</v-list-tile-avatar>
-				
+							:key="soundclip.id">
 							<v-list-tile-content>
-								<v-list-tile-title>{{ soundclip.created_at }} - {{ soundclip.readStatus }}</v-list-tile-title>
+								<v-list-tile-title>{{ readDateTime(soundclip) }} - <span :class="statusColour(soundclip)">{{ soundclip.readStatus }}</span></v-list-tile-title>
 							</v-list-tile-content>
 				
 							<v-list-tile-action>
@@ -119,28 +174,7 @@ export default {
 						</v-divider>
 					</template>
 				</v-list>
-				<v-divider></v-divider>
-				<v-card-actions>
-					<v-spacer></v-spacer>
-					<v-btn round 
-						color="primary" 
-						@click="stopRecording" 
-						v-if="recording">
-						Recording...
-						<v-icon right>stop</v-icon>
-					</v-btn>
-					<v-tooltip bottom
-							v-if="!recording">
-						<v-btn fab 
-							small 
-							slot="activator" 
-							color="primary" 
-							@click="record">
-							<v-icon>mic</v-icon>
-						</v-btn>
-						<span>Record Voicenote</span>
-					</v-tooltip>
-				</v-card-actions>
+				
 			</v-card>
 		</v-flex>
 	</v-layout>

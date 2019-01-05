@@ -15,13 +15,38 @@ class SoundclipHttp {
 	 *
 	 * @return {Object} Beneficiary
 	 */
+    async create({ soundclip, beneficiaryID, onUploadProgress = () => {} }) {
+        try {
+            let data = new FormData();
+            data.append('soundclip', soundclip, soundclip.name);
+            data.append('beneficiary_id', beneficiaryID);
+            
+            return (await this.client.post(this.prefix, data, {
+                headers: {
+                    'Content-Type': `multipart/form-data; boundary=${data._boundary}`
+                },
+                onUploadProgress,
+                timeout: 30000
+            })).data;
+        } catch (error) {
+            console.error(ErrorUtil.getMessages(error));
+            return error;
+        }
+    }
+
+    /**
+	 * Get the buffer stream to play a Soundclip
+	 *
+	 * @method play
+	 *
+	 * @return {Object} Beneficiary
+	 */
     async play(id) {
         try {
             return (await this.client.get(this.prefix + `/${id}/play`, {
                 responseType: 'arraybuffer',
             })).data;
-        }
-        catch (error) {
+        } catch (error) {
             console.error(ErrorUtil.getMessages(error));
             return error;
         }
@@ -43,8 +68,7 @@ class SoundclipHttp {
                     load
                 }
             })).data;
-        }
-        catch (error) {
+        } catch (error) {
             console.error(ErrorUtil.getMessages(error));
             return error;
         }

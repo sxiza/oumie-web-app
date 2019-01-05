@@ -5,7 +5,7 @@ class ObjectUtil {
 		}
 
 		return Object.keys(object).length <= 0; 
-    }
+	}
     
     static isNotEmpty(object) {
 		return this.constructor.isEmpty(object);
