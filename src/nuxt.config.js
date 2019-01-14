@@ -1,5 +1,6 @@
 const nodeExternals = require('webpack-node-externals')
 const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
+
 module.exports = {
   /*
   ** Headers of the page
@@ -21,11 +22,8 @@ module.exports = {
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ],
-  // router: {
-  //   middleware: ['auth']
-  // },
   axios: {
-    baseURL: 'http://192.168.99.100:3333'
+    baseURL: process.env.API_URL || 'http://192.168.99.100:3333',
   },
   auth: {
     strategies: {
@@ -48,11 +46,24 @@ module.exports = {
   ** Build configuration
   */
   build: {
+    publicPath: process.env.NODE_ENV === 'development' ? '/_nuxt/' : '/assets/client/',
     transpile: [/^vuetify/],
     plugins: [
       new VuetifyLoaderPlugin()
     ],
     extractCSS: true,
+    babel: {
+      presets: [
+        '@babel/preset-env'
+      ],
+      plugins: [
+        ['@babel/plugin-transform-runtime', {
+          corejs: 2,
+          regenerator: true
+        }],
+        '@babel/plugin-syntax-dynamic-import'
+      ]
+    },
     extend (config, ctx) {
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {

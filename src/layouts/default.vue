@@ -27,26 +27,28 @@ export default {
 				return `Welcome to Oumienet, ${this.self.name}`;
 			else
 				return 'Oumienet';
+		},
+		menuItems() {
+			return this.items.filter(item => {
+				if (this.authenticated) {
+					if (item.inAuth) {
+						return true;
+					}
+					else {
+						return false;
+					}
+				}
+				else {
+					if (item.public)
+						return true;
+					else
+						return false;
+				}
+			});
 		}
 	},
 
 	methods: {
-		showMenuItem(item) {
-			if (this.authenticated) {
-				if (item.inAuth) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			}
-			else {
-				if (item.public)
-					return true;
-				else
-					return false;
-			}
-		},
 		async logout() {
 			await this.$auth.logout();
 		}
@@ -67,9 +69,8 @@ export default {
 				router
 				:to="item.to"
 				:key="i"
-				v-for="(item, i) in items"
+				v-for="(item, i) in menuItems"
 				exact
-				v-if="showMenuItem(item)"
 				@click="item.action">
 				<v-list-tile-action>
 					<v-icon v-html="item.icon"></v-icon>
