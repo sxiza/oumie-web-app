@@ -5,22 +5,30 @@ const { Nuxt } = require('nuxt')
 const app = express()
 
 const config = {
-    dev: false,
-    buildDir: process.env.NODE_ENV ? '.nuxt' : '../functions/nuxt',
-    build: {
-        publicPath: '/assets/client/',
-    }
+  axios: {
+    baseURL: process.env.API_URL || 'http://192.168.99.100:3333',
+  },
+  dev: false,
+  buildDir: 'nuxt',
+  build: {
+    publicPath: '/assets/client/',
+  }
 }
 const nuxt = new Nuxt(config)
 
 function handleRequest(req, res) {
-    res.set('Cache-Control', 'public, max-age=600, s-maxage=1200')
-    nuxt.renderRoute('/').then(result => {
-        res.send(result.html)
-    }).catch(e => {
-        res.send(e)
-    })
+  console.log("IN New Nuxt Trial: ");
+  // const isProduction = process.env.NODE_ENV === "development" ? false : true;
+  // if (isProduction)
+  //   res.set("Cache-Control", "public, max-age=150, s-maxage=150");
+
+  try {
+    nuxt.render(req, res);
+    console.log(process.env.NODE_ENV);
+  } catch (err) {
+    console.error(err);
+  }
 }
-app.get('*', handleRequest)
-exports.nuxtApp = functions.region('europe-west1')
-                        .https.onRequest(app)
+  
+app.use(handleRequest);
+exports.nuxtApp = functions.https.onRequest(app)
