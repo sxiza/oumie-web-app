@@ -11,12 +11,12 @@
     "setup": "npm install && npm run setup:client && npm run setup:server",
     "setup:client": "cd \"src\" && npm install",
     "setup:server": "cd \"functions\" && npm install",
-    "copyassets": "npm run copyclient && npm run copyserver && npm run copystatic",
-    "copyclient": "cp -R functions/nuxt/dist/client public/assets",
+    "copyassets": "npm run copyclient",
+    "copyclient": "cp -R src/dist/* public/",
     "copyserver": "cp -R functions/nuxt/dist/server public/assets",
     "copystatic": "cp -R src/static/* public",
     "clean": "rimraf public/assets/* && rimraf public/*.*",
-    "build:nuxt": "cd \"src\" && npm run build",
+    "build:nuxt": "cd \"src\" && npm run generate",
     "copy:nuxt": "cp -R src/.nuxt/* functions/nuxt"
   },
   "devDependencies": {

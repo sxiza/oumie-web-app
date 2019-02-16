@@ -44,6 +44,13 @@ export default {
 			this.uploaded = parseInt( Math.round( ( progressEvent.loaded * 100 ) / progressEvent.total ) );
 		},
 
+		async getSoundclips() {
+			let soundclips = await this.soundclipHttp.getAll({
+				beneficiaryID: this.$route.params.id
+			});
+			this.$store.commit('beneficiary/setSoundclips', soundclips);
+		},
+
 		async getBeneficiary() {
 			let beneficiary = await this.beneficiaryHttp.show(this.$route.params.id);
 			this.$store.commit('beneficiary/setCurrBeneficiary', beneficiary);
@@ -54,7 +61,8 @@ export default {
 				let soundBuffer = await this.soundclipHttp.play(soundclip.id);
 				let clip = this.audio.generateFromBuffer([soundBuffer]);
 				clip.play();
-			} catch(error) {
+			}
+			catch(error) {
 				console.error(error.message);
 			}
 		},
@@ -85,10 +93,6 @@ export default {
 		// called every time before loading the component
 		// as the name said, it can be async
 		// Also, the returned object will be merged with your data object
-		let soundclips = await (new SoundclipHttp(context.$axios)).getAll({
-			beneficiaryID: context.route.params.id
-		});
-		context.store.commit('beneficiary/setSoundclips', soundclips);
 
 		return { };
 	},
@@ -104,10 +108,14 @@ export default {
 		this.soundclipHttp = new SoundclipHttp(this.$axios);
 		this.beneficiaryHttp = new BeneficiaryHttp(this.$axios);
 		this.audio = new AudioGenerator;
+	},
 
+	mounted() {
 		if (ObjectUtil.isEmpty(this.beneficiary))
 			this.getBeneficiary();
-	},
+		if (!this.soundclips.length)
+			this.getSoundclips();
+	}
 }
 </script>
 

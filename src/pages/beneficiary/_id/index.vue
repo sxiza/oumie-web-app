@@ -1,5 +1,6 @@
 <script>
 import { mapGetters } from 'vuex'
+import ObjectUtil from '../../../utils/ObjectUtil'
 import BeneficiaryHttp from '../../../services/http/BeneficiaryHttp'
 import ImageGenerator from '../../../services/images/ImageGenerator'
 
@@ -20,21 +21,22 @@ export default {
 	},
 
 	methods: {
+        async getBeneficiary() {
+            let beneficiary = await this.beneficiaryHttp.show(this.$route.params.id);
+            this.$store.commit('beneficiary/setCurrBeneficiary', beneficiary);
+        },
+
+        async generatePicture() {
+            this.picture = await this.imageGenerator.topics(this.beneficiary.name || 'grandparent').url();
+        },
+
         back() {
             this.$router.back();
         }
     },
 
 	async asyncData(context) {
-        let id = context.route.params.id;
-        let beneficiary = await (new BeneficiaryHttp(context.$axios)).show(id);
-        context.store.commit('beneficiary/setCurrBeneficiary', beneficiary);
-        
-        // Get the card picture
-        let url = (new ImageGenerator).topics(beneficiary.name).url();
-
 		return { 
-            picture: url,
         };
 	},
 
@@ -42,12 +44,16 @@ export default {
     },
 
     created() {
-    },
-    
-    beforeCreate() {
         this.beneficiaryHttp = new BeneficiaryHttp(this.$axios);
         this.imageGenerator = new ImageGenerator;
     },
+
+    mounted() {
+        if (ObjectUtil.isEmpty(this.beneficiary))
+            this.getBeneficiary();
+
+        this.generatePicture();
+    }
 }
 </script>
 

@@ -16,25 +16,32 @@ export default {
 	},
 
 	methods: {
-
+		async getBeneficiaries() {
+			let beneficiaries = await this.beneficiaryHttp.getAll();
+			this.$store.commit('beneficiary/setBeneficiaries', beneficiaries);
+		},
     },
 
 	async asyncData(context) {
 		// called every time before loading the component
 		// as the name said, it can be async
 		// Also, the returned object will be merged with your data object
-		let beneficiaries = await (new BeneficiaryHttp(context.$axios)).getAll();
-		context.store.commit('beneficiary/setBeneficiaries', beneficiaries);
 
 		return { };
 	},
 
-	fetch({ store }) {
+	async fetch({ store }) {
+		
+	},
+	
+	created() {
+		this.beneficiaryHttp = new BeneficiaryHttp(this.$axios);
 	},
 
-    beforeCreate() {
-        this.beneficiaryHttp = new BeneficiaryHttp(this.$axios);
-    }
+	mounted() {
+		if (!this.beneficiaries.length)
+			this.getBeneficiaries();
+	}
 }
 </script>
 
