@@ -18,12 +18,12 @@ module.exports = {
     ]
   },
   modules: [
-    '@nuxtjs/dotenv',
+    ['@nuxtjs/dotenv', { filename: process.env.NODE_ENV === 'local' ? '.env' : '.env.prod' }],
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ],
   axios: {
-    baseURL: process.env.API_URL || 'http://192.168.99.100:3333',
+    baseURL: process.env.NODE_ENV === 'local' ? 'http://192.168.99.100:3333' : 'http://34.73.95.105'
   },
   auth: {
     strategies: {
