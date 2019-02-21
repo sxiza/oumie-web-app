@@ -23,7 +23,7 @@ module.exports = {
     '@nuxtjs/auth'
   ],
   axios: {
-    baseURL: process.env.NODE_ENV === 'local' ? 'http://192.168.99.100:3333' : 'http://34.73.95.105'
+    baseURL: process.env.NODE_ENV === 'local' ? 'http://192.168.99.100:3333' : 'https://api.oumie.app'
   },
   auth: {
     strategies: {
