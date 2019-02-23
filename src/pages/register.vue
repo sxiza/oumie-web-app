@@ -135,6 +135,10 @@ export default {
                         Register
                     </v-btn>
                     <v-btn @click="clear">clear</v-btn>
+                    <v-flex xs12>
+                        <br>
+                        Already registered? Login <a href="/login">here</a>
+                    </v-flex>
                     </v-layout>
                     </v-container>
                 </v-form>

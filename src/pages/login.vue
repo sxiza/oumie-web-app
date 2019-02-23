@@ -12,9 +12,6 @@ export default {
 	},
 	
 	computed: {
-		env() {
-			return this.$store.state.inspire.poefing;
-		}
 	},
 
 	methods: {
@@ -25,6 +22,8 @@ export default {
                     password: this.password
                 })
             });
+            
+            this.$router.push({ name: 'beneficiary' });
         },
         
         clear () {
@@ -40,7 +39,6 @@ export default {
 	},
 
 	fetch({ store }) {
-		store.commit('inspire/setPoef', process.env.API_URL)
 	}
 }
 </script>
@@ -83,6 +81,10 @@ export default {
                         Login
                     </v-btn>
                     <v-btn @click="clear">clear</v-btn>
+                    <v-flex xs12>
+                        <br>
+                        No account yet? Register <a href="/register">here</a>
+                    </v-flex>
                     </v-layout>
                     </v-container>
                 </v-form>

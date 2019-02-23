@@ -6,6 +6,7 @@ export default {
 	data() {
         return {
 			beneficiaryHttp: {},
+			dialog: false
         }
 	},
 	
@@ -49,11 +50,17 @@ export default {
 <v-container fluid
             grid-list-md>
 	<v-layout row wrap>
+		<v-flex xs12>
+			<h6 class="title">Beneficiaries	</h6>
+		</v-flex>
+		<v-flex xs12>
+			<v-divider></v-divider>
+		</v-flex>
 		<v-flex xs12 md4>
 			<v-card v-for="beneficiary in beneficiaries"
 					:key="beneficiary.id"
 					color="grey darken-1"
-					:to="`/beneficiary/${beneficiary.id}`">
+					:to="{ name: 'beneficiary-id', params: { id: beneficiary.id }}">
 				<v-card-title primary-title class="white--text">
 					<div class="headline">{{ beneficiary.name }}</div>
 					<v-spacer></v-spacer>
@@ -71,6 +78,36 @@ export default {
 				</v-card-actions>
 			</v-card>
 		</v-flex>
+		<v-flex xs12>
+			<v-divider></v-divider>
+		</v-flex>
+		<v-flex xs12 class="hidden-md-and-down">
+			<v-btn @click="dialog = !dialog" color="primary" dark large>Add <v-icon right>add</v-icon></v-btn>
+		</v-flex>
+		<v-btn dark
+			fixed
+			right
+			bottom
+			fab
+			color="primary"
+			@click="dialog = !dialog">
+			<v-icon>add</v-icon>
+		</v-btn>
 	</v-layout>
+	
+	<v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">	
+		<v-card>
+			<v-toolbar dark color="primary">
+				<v-btn icon dark @click="dialog = false">
+					<v-icon>close</v-icon>
+				</v-btn>
+				<v-toolbar-title>Add Beneficiary</v-toolbar-title>
+				<v-spacer></v-spacer>
+				<v-toolbar-items>
+					<v-btn dark flat @click="dialog = false">Save</v-btn>
+				</v-toolbar-items>
+			</v-toolbar>
+		</v-card>
+	</v-dialog>
 </v-container>
 </template>

@@ -1,6 +1,9 @@
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
 	computed: {
+		...mapGetters(['authenticated']),
 		name() {
 			return process.env.APP_NAME
 		}
@@ -20,9 +23,13 @@ export default {
 				<p>Oumienet helps you let your grandparents know you care about them, in ways that are convenient to everyone</p>
 				<small>You can also use it for your blind friends or family</small>
 			</v-card-text>
-			<v-card-actions>
+			<v-card-actions v-if="authenticated">
 				<v-spacer></v-spacer>
 				<v-btn color="primary" flat nuxt to="/beneficiary">Continue</v-btn>
+			</v-card-actions>
+			<v-card-actions v-if="!authenticated">
+				<v-spacer></v-spacer>
+				<v-btn color="primary" flat nuxt to="/login">Continue</v-btn>
 			</v-card-actions>
 		</v-card>
 	</v-flex>

@@ -18,12 +18,12 @@ module.exports = {
     ]
   },
   modules: [
-    ['@nuxtjs/dotenv', { filename: process.env.NODE_ENV === 'local' ? '.env' : '.env.prod' }],
+    ['@nuxtjs/dotenv', { filename: process.env.NODE_ENV === 'development' ? '.env' : '.env.prod' }],
     '@nuxtjs/axios',
     '@nuxtjs/auth'
   ],
   axios: {
-    baseURL: process.env.NODE_ENV === 'local' ? 'http://192.168.99.100:3333' : 'https://api.oumie.app'
+    baseURL: process.env.NODE_ENV === 'development' ? 'http://192.168.99.100:3333' : 'https://api.oumie.app'
   },
   auth: {
     strategies: {
