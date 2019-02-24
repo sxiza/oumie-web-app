@@ -1,12 +1,19 @@
 <script>
-import BeneficiaryHttp from '../../services/http/BeneficiaryHttp'
 import { mapGetters } from 'vuex'
+import { EventBus } from '~/services/events/EventBus'
+import BeneficiaryHttp from '~/services/http/BeneficiaryHttp'
+import BeneficiaryEvents from '~/constants/events/BeneficiaryEvents'
+import BeneficiaryCreateDialog from '~/components/beneficiary/BeneficiaryCreateDialog'
 
 export default {
+	components: {
+		BeneficiaryCreateDialog
+	},
+
 	data() {
         return {
 			beneficiaryHttp: {},
-			dialog: false
+			dialogEvent: BeneficiaryEvents.INPUT_DIALOG_OPEN,
         }
 	},
 	
@@ -17,6 +24,10 @@ export default {
 	},
 
 	methods: {
+		openAddDialog(open) {
+			EventBus.$emit(this.dialogEvent, open);
+		},
+
 		async getBeneficiaries() {
 			let beneficiaries = await this.beneficiaryHttp.getAll();
 			this.$store.commit('beneficiary/setBeneficiaries', beneficiaries);
@@ -82,7 +93,7 @@ export default {
 			<v-divider></v-divider>
 		</v-flex>
 		<v-flex xs12 class="hidden-md-and-down">
-			<v-btn @click="dialog = !dialog" color="primary" dark large>Add <v-icon right>add</v-icon></v-btn>
+			<v-btn @click="openAddDialog(true)" color="primary" dark large>Add <v-icon right>add</v-icon></v-btn>
 		</v-flex>
 		<v-btn dark
 			fixed
@@ -90,24 +101,10 @@ export default {
 			bottom
 			fab
 			color="primary"
-			@click="dialog = !dialog">
+			@click="openAddDialog(true)">
 			<v-icon>add</v-icon>
 		</v-btn>
 	</v-layout>
-	
-	<v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition">	
-		<v-card>
-			<v-toolbar dark color="primary">
-				<v-btn icon dark @click="dialog = false">
-					<v-icon>close</v-icon>
-				</v-btn>
-				<v-toolbar-title>Add Beneficiary</v-toolbar-title>
-				<v-spacer></v-spacer>
-				<v-toolbar-items>
-					<v-btn dark flat @click="dialog = false">Save</v-btn>
-				</v-toolbar-items>
-			</v-toolbar>
-		</v-card>
-	</v-dialog>
+	<beneficiary-create-dialog :event="dialogEvent"></beneficiary-create-dialog>
 </v-container>
 </template>
