@@ -9,6 +9,20 @@ class BeneficiaryHttp {
     }
 
     /**
+	 * Create new beneificiary
+	 *
+	 * @method get
+	 *
+	 * @return {Object} Beneficiary
+	 */
+    async store({ name, mobile }) {
+        return (await this.client.post(this.prefix, {
+            name,
+            mobile
+        })).data;
+    }
+
+    /**
 	 * Get specific beneficiary data
 	 *
 	 * @method get

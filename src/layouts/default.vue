@@ -1,5 +1,5 @@
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
 	data () {
@@ -21,7 +21,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['authenticated', 'self']),
+		...mapGetters(['authenticated', 'self', 'snackbarShow', 'snackbarMessage']),
 		title() {
 			if (this.authenticated)
 				return `Welcome to Oumienet, ${this.self.name}`;
@@ -49,6 +49,9 @@ export default {
 	},
 
 	methods: {
+		...mapMutations({
+			hideSnackbar: 'hideSnackbar'
+		}),
 		async logout() {
 			await this.$auth.logout();
 		}
@@ -58,6 +61,18 @@ export default {
 
 <template>
 <v-app light>
+	<v-snackbar
+        v-model="snackbarShow"
+        bottom="bottom"
+        :timeout=5000>
+		{{ snackbarMessage }}
+        <v-btn
+          color="pink"
+          flat
+          @click="hideSnackbar">
+          Close
+        </v-btn>
+	</v-snackbar>
 	<v-navigation-drawer
 		:mini-variant.sync="miniVariant"
 		:clipped="clipped"

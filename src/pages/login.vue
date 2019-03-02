@@ -76,6 +76,7 @@ export default {
                         ></v-text-field>
                     </v-flex>
                     <v-btn
+                        color="primary"
                         :disabled="!valid"
                         @click="submit">
                         Login

@@ -40,6 +40,8 @@ export default {
                         password: this.password
                     })
                 });
+
+                this.$router.push('/');
             }
             catch (error) {
                 console.error(ErrorUtil.getMessages(error));
@@ -130,6 +132,7 @@ export default {
                         ></v-text-field>
                     </v-flex>
                     <v-btn
+                        color="primary"
                         :disabled="!valid"
                         @click="submit">
                         Register

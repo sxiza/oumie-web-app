@@ -11,12 +11,17 @@ export default {
         saveEvent: {
             type: String,
             default: UIEvents.INPUT_DIALOG_SAVE
+        },
+        closeEvent: {
+            type: String,
+            default: UIEvents.INPUT_DIALOG_CLOSE
         }
     },
 
 	data() {
         return {
-            show: false
+            show: false,
+            saveLoading: false
         }
 	},
 	
@@ -25,11 +30,18 @@ export default {
 
 	methods: {
         save() {
+            this.saveLoading = true;
             EventBus.$emit(this.saveEvent);
         },
         
         open() {
+            this.saveLoading = false;
             this.show = true;
+        },
+
+        close() {
+            this.saveLoading = false;
+            this.show = false;
         }
     },
 
@@ -50,6 +62,8 @@ export default {
 
 	mounted() {
         EventBus.$on(this.openEvent, this.open);
+        EventBus.$on(this.closeEvent, this.close);
+        EventBus.$on(UIEvents.VALIDATION_ERROR, () => this.saveLoading = false)
 	}
 }
 </script>
@@ -58,13 +72,17 @@ export default {
 <v-dialog v-model="show" fullscreen hide-overlay transition="dialog-bottom-transition">	
     <v-card>
         <v-toolbar dark color="primary">
-            <v-btn icon dark @click="show = false">
+            <v-btn icon dark @click="close">
                 <v-icon>close</v-icon>
             </v-btn>
             <v-toolbar-title><slot name="title"></slot></v-toolbar-title>
             <v-spacer></v-spacer>
             <v-toolbar-items>
-                <v-btn dark flat @click="save()">Save</v-btn>
+                <v-btn 
+                    dark 
+                    flat 
+                    :loading="saveLoading"
+                    @click="save">Save</v-btn>
             </v-toolbar-items>
         </v-toolbar>
         <v-card-text>

@@ -1,7 +1,8 @@
 export const state = () => ({
     beneficiaries: [],
     currBeneficiary: {},
-    soundclips: []
+    soundclips: [],
+    formErrors: []
 })
 
 export const getters = {
@@ -13,6 +14,9 @@ export const getters = {
     },
     soundclips(state) {
         return state.soundclips;
+    },
+    formErrors(state) {
+        return state.formErrors;
     }
 }
 
@@ -23,10 +27,19 @@ export const mutations = {
     setSoundclips(state, soundclips) {
         state.soundclips = soundclips;
     },
+    addBeneficiary(state, beneficiary) {
+        state.beneficiaries.unshift(beneficiary);
+    },
     setBeneficiaries(state, beneficiaries) {
         state.beneficiaries = beneficiaries;
     },
     setCurrBeneficiary(state, beneficiary) {
         state.currBeneficiary = beneficiary;
+    },
+    setFormErrors(state, errors) {
+        state.formErrors = errors;
+    },
+    removeFormError(state, field) {
+        state.formErrors = state.formErrors.filter(error => error.source.pointer !== field);
     }
 }
