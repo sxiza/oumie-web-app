@@ -54,7 +54,7 @@ export default {
 	},
 
 	mounted() {
-		EventBus.$on(this.saveEvent, () => this.saveBeneficiary);
+		EventBus.$on(this.saveEvent, this.saveBeneficiary);
 	}
 }
 </script>
