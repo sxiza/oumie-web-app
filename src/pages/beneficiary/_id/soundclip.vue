@@ -178,7 +178,7 @@ export default {
 						</v-list-tile>
 						<v-divider
 							v-if="k + 1 < soundclips.length"
-                			:key="k">
+                			:key="`${k}-divider`">
 						</v-divider>
 					</template>
 				</v-list>

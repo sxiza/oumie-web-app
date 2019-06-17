@@ -85,7 +85,7 @@ export default {
             grid-list-md>
 	<v-layout row wrap>
 		<v-flex xs12>
-			<h6 class="title">Beneficiaries	</h6>
+			<h6 class="title">Beneficiaries</h6>
 		</v-flex>
 		<v-flex xs12>
 			<v-divider></v-divider>

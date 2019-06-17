@@ -8,8 +8,17 @@ class AudioGenerator {
 
     async initRecorder() {
         this.chunks = [];
-        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        this.recorder = new MediaRecorder(this.stream);
+        this.stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                channelCount: {
+                    exact: 1,
+                },
+                sampleRate: 1600
+            }
+        });
+        this.recorder = new MediaRecorder(this.stream, {
+            bitsPerSecond: 16000
+        });
         this.recorder.addEventListener("dataavailable", event => this.chunks.push(event.data));
         this.initialized = true;
     }
@@ -40,7 +49,8 @@ class AudioGenerator {
     }
 
     generateFromBuffer(buffer) {
-        this.file = new Blob(buffer, { type: 'audio/mp4' });
+        this.file = new Blob(buffer, { type: 'audio/wav' });
+        
         let src = URL.createObjectURL(this.file);
         this.instance = new Audio(src);
         
